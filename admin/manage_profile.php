@@ -14,7 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_profile'])) {
     $fields = [
         'name', 'title', 'bio_short', 'bio_full', 
         'email', 'phone', 'location', 
-        'github', 'linkedin', 'facebook'
+        'github', 'linkedin', 'facebook',
+        'gpa', 'coffee'
     ];
     
     try {
@@ -209,7 +210,20 @@ function val($info, $key) {
             <input type="url" id="facebook" name="facebook" placeholder="https://facebook.com/username" value="<?= val($info, 'facebook') ?>">
         </div>
         
-        <button type="submit" name="save_profile" class="btn-admin btn-admin-primary" style="margin-top: 1rem;">
+        <!-- Profile Statistics -->
+        <h3 style="margin-top: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; font-size: 1.1rem;"><i class="fas fa-chart-bar"></i> Dynamic Statistics Counters</h3>
+        <div class="form-row-2">
+            <div class="form-group">
+                <label for="gpa">Academic GPA / Grade (e.g. 3.90)</label>
+                <input type="text" id="gpa" name="gpa" placeholder="e.g. 3.90" value="<?= val($info, 'gpa') ?>">
+            </div>
+            <div class="form-group">
+                <label for="coffee">Cups of Coffee consumed</label>
+                <input type="number" id="coffee" name="coffee" placeholder="e.g. 250" value="<?= val($info, 'coffee') ?>">
+            </div>
+        </div>
+        
+        <button type="submit" name="save_profile" class="btn-admin btn-admin-primary" style="margin-top: 1.5rem;">
             Save Profile Changes <i class="fas fa-save"></i>
         </button>
     </form>

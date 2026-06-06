@@ -18,8 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
             if (strlen($new_pass) >= 6) {
                 try {
                     // Fetch current password hash from database
-                    $stmt = $pdo->prepare("SELECT `password` FROM `users` WHERE `username` = ? LIMIT 1");
-                    $stmt->execute([$_SESSION['admin_username']]);
+                    $stmt = $pdo->prepare("SELECT `password` FROM `users` WHERE `email` = ? LIMIT 1");
+                    $stmt->execute([$_SESSION['admin_email']]);
                     $hashed_password = $stmt->fetchColumn();
                     
                     // Verify current password
@@ -28,8 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
                         $new_hashed_password = password_hash($new_pass, PASSWORD_BCRYPT);
                         
                         // Update in database
-                        $update_stmt = $pdo->prepare("UPDATE `users` SET `password` = ? WHERE `username` = ?");
-                        $update_stmt->execute([$new_hashed_password, $_SESSION['admin_username']]);
+                        $update_stmt = $pdo->prepare("UPDATE `users` SET `password` = ? WHERE `email` = ?");
+                        $update_stmt->execute([$new_hashed_password, $_SESSION['admin_email']]);
                         
                         $success_msg = 'Password changed successfully!';
                     } else {

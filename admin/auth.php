@@ -4,6 +4,16 @@
  * Included at the top of all admin dashboard pages.
  */
 if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.cookie_httponly', 1);
+    ini_set('session.cookie_use_only_cookies', 1);
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+        ini_set('session.cookie_secure', 1);
+    }
+    session_set_cookie_params([
+        'samesite' => 'Strict',
+        'httponly' => true,
+        'secure' => isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443
+    ]);
     session_start();
 }
 

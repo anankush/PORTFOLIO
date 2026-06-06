@@ -9,6 +9,19 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
+// Set secure session parameters before starting session
+ini_set('session.cookie_httponly', 1);
+ini_set('session.cookie_use_only_cookies', 1);
+if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+    ini_set('session.cookie_secure', 1);
+}
+session_set_cookie_params([
+    'samesite' => 'Strict',
+    'httponly' => true,
+    'secure' => isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443
+]);
+session_start();
+
 // Handle preflight request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
@@ -26,12 +39,18 @@ function sendResponse($data, $statusCode = 200) {
 }
 
 if ($action === 'get_portfolio') {
+    // Generate a random math question for contact form anti-spam
+    $num1 = rand(1, 9);
+    $num2 = rand(1, 9);
+    $_SESSION['captcha_ans'] = $num1 + $num2;
+    
     $response = [
         'profile' => [],
         'education' => [],
         'skills' => [],
         'projects' => [],
-        'custom_sections' => []
+        'custom_sections' => [],
+        'captcha_question' => "What is $num1 + $num2?"
     ];
     
     try {
@@ -122,6 +141,7 @@ elseif ($action === 'send_message') {
     $email = trim($_POST['email'] ?? $jsonData['email'] ?? '');
     $subject = trim($_POST['subject'] ?? $jsonData['subject'] ?? '');
     $message = trim($_POST['message'] ?? $jsonData['message'] ?? '');
+    $captcha_input = trim($_POST['captcha'] ?? $jsonData['captcha'] ?? '');
     
     if (empty($name) || empty($email) || empty($subject) || empty($message)) {
         sendResponse([
@@ -129,6 +149,17 @@ elseif ($action === 'send_message') {
             'message' => 'All fields (name, email, subject, message) are required.'
         ], 400);
     }
+    
+    // Verify Security Captcha
+    if (!isset($_SESSION['captcha_ans']) || (int)$captcha_input !== (int)$_SESSION['captcha_ans']) {
+        sendResponse([
+            'status' => 'error',
+            'message' => 'Incorrect security captcha answer. Please try again.'
+        ], 400);
+    }
+    
+    // Clear captcha from session to prevent replay attacks
+    unset($_SESSION['captcha_ans']);
     
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         sendResponse([

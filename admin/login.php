@@ -3,7 +3,18 @@
  * Admin Login Page
  * Handles secure session authentication using database password hash verification.
  */
+ini_set('session.cookie_httponly', 1);
+ini_set('session.cookie_use_only_cookies', 1);
+if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+    ini_set('session.cookie_secure', 1);
+}
+session_set_cookie_params([
+    'samesite' => 'Strict',
+    'httponly' => true,
+    'secure' => isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443
+]);
 session_start();
+
 require_once __DIR__ . '/../db.php';
 
 // If already logged in, redirect to dashboard
@@ -15,30 +26,36 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
 $error_msg = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
-    $username = trim($_POST['username'] ?? '');
+    $email = trim($_POST['email'] ?? '');
     $password = trim($_POST['password'] ?? '');
     
-    if ($username !== '' && $password !== '') {
-        try {
-            $stmt = $pdo->prepare("SELECT * FROM `users` WHERE `username` = ? LIMIT 1");
-            $stmt->execute([$username]);
-            $user = $stmt->fetch();
-            
-            if ($user && password_verify($password, $user['password'])) {
-                $_SESSION['admin_logged_in'] = true;
-                $_SESSION['admin_username'] = $user['username'];
-                $_SESSION['last_activity'] = time();
+    if ($email !== '' && $password !== '') {
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            try {
+                $stmt = $pdo->prepare("SELECT * FROM `users` WHERE `email` = ? LIMIT 1");
+                $stmt->execute([$email]);
+                $user = $stmt->fetch();
                 
-                header("Location: dashboard.php");
-                exit();
-            } else {
-                $error_msg = 'Invalid username or password.';
+                if ($user && password_verify($password, $user['password'])) {
+                    $_SESSION['admin_logged_in'] = true;
+                    $_SESSION['admin_email'] = $user['email'];
+                    $_SESSION['last_activity'] = time();
+                    
+                    header("Location: dashboard.php");
+                    exit();
+                } else {
+                    // Security Throttling against brute-force/dictionary attacks
+                    sleep(1);
+                    $error_msg = 'Invalid email or password.';
+                }
+            } catch (PDOException $e) {
+                $error_msg = 'Database error. Please try again.';
             }
-        } catch (PDOException $e) {
-            $error_msg = 'Database error. Please try again.';
+        } else {
+            $error_msg = 'Please enter a valid email address.';
         }
     } else {
-        $error_msg = 'Please enter both username and password.';
+        $error_msg = 'Please enter both email and password.';
     }
 }
 ?>
@@ -263,8 +280,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
         
         <form action="login.php" method="POST">
             <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" required autocomplete="username">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required autocomplete="email">
             </div>
             
             <div class="form-group">

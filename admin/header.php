@@ -8,6 +8,12 @@ require_once __DIR__ . '/../db.php';
 
 // Active page helper
 $current_page = basename($_SERVER['PHP_SELF']);
+
+// Count messages for dashboard badge notification
+$inbox_count = 0;
+try {
+    $inbox_count = (int)$pdo->query("SELECT COUNT(*) FROM `messages`")->fetchColumn();
+} catch (PDOException $e) {}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -433,6 +439,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <li>
                 <a href="manage_messages.php" class="menu-link <?= $current_page === 'manage_messages.php' ? 'active' : '' ?>">
                     <i class="fas fa-envelope"></i> <span>Messages</span>
+                    <?php if ($inbox_count > 0): ?>
+                        <span class="msg-badge" style="background-color: var(--primary-color); color: white; padding: 2px 7px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; margin-left: auto;"><?= $inbox_count ?></span>
+                    <?php endif; ?>
                 </a>
             </li>
             <li>
@@ -468,7 +477,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     }
                     ?>
                 </h1>
-                <p>Welcome back, <?= htmlspecialchars($_SESSION['admin_username']) ?>!</p>
+                <p>Welcome back, <?= htmlspecialchars($_SESSION['admin_email'] ?? '') ?>!</p>
             </div>
             <div class="header-actions">
                 <a href="../index.html" class="btn-view-site" target="_blank"><i class="fas fa-external-link-alt"></i> View Site</a>

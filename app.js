@@ -75,6 +75,19 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/'/g, '&#039;');
     }
 
+    // --- Captcha Refresh Helper ---
+    async function refreshCaptcha() {
+        try {
+            const response = await fetch(`${apiEndpoint}?action=get_portfolio`);
+            const json = await response.json();
+            if (json.status === 'success' && json.data.captcha_question) {
+                document.getElementById('captcha-question-label').textContent = json.data.captcha_question;
+            }
+        } catch (error) {
+            console.error('Failed to refresh captcha:', error);
+        }
+    }
+
     // --- Fetch and Render Portfolio Data ---
     async function loadPortfolio() {
         try {
@@ -93,8 +106,32 @@ document.addEventListener('DOMContentLoaded', () => {
             renderProjects(data.projects);
             renderCustomSections(data.custom_sections);
             
-            // Initialize animations after DOM elements are fully loaded
+            // Set captcha question from initial load
+            if (data.captcha_question) {
+                document.getElementById('captcha-question-label').textContent = data.captcha_question;
+            }
+            
+            // Set dynamic targets for Stats counter
+            const projCount = data.projects ? data.projects.length : 0;
+            document.getElementById('stat-completed-projects').setAttribute('data-target', projCount);
+            
+            let skillCount = 0;
+            if (data.skills) {
+                Object.keys(data.skills).forEach(cat => {
+                    skillCount += data.skills[cat].length;
+                });
+            }
+            document.getElementById('stat-languages').setAttribute('data-target', skillCount);
+            
+            const profileGpa = data.profile.gpa || '3.9';
+            document.getElementById('stat-gpa').setAttribute('data-target', profileGpa);
+            
+            const profileCoffee = data.profile.coffee || '180';
+            document.getElementById('stat-coffee').setAttribute('data-target', profileCoffee);
+            
+            // Initialize animations and statistics observers after DOM is ready
             initializeAnimations();
+            initializeStatsObserver();
             
         } catch (error) {
             console.error('Failed to load portfolio:', error);
@@ -120,14 +157,26 @@ document.addEventListener('DOMContentLoaded', () => {
             imgContainer.innerHTML = `<img src="images/uploads/${escapeHTML(profile.profile_picture)}" alt="${nameEsced}" class="hero-img">`;
         }
         
-        // Resume Button
+        // Resume Button (View Resume Modal)
         if (profile.resume_url && profile.resume_url !== '#') {
             const heroButtons = document.getElementById('hero-buttons');
-            const resumeBtn = document.createElement('a');
-            resumeBtn.href = escapeHTML(profile.resume_url);
+            const resumeBtn = document.createElement('button');
+            resumeBtn.type = 'button';
             resumeBtn.className = 'btn btn-secondary';
-            resumeBtn.target = '_blank';
-            resumeBtn.innerHTML = `Download Resume <i class="fas fa-download"></i>`;
+            resumeBtn.innerHTML = `View Resume <i class="fas fa-file-pdf"></i>`;
+            
+            resumeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const modal = document.getElementById('resume-modal');
+                const iframe = document.getElementById('resume-iframe');
+                const downloadBtn = document.getElementById('downloadResumeBtn');
+                
+                iframe.src = profile.resume_url;
+                downloadBtn.href = profile.resume_url;
+                modal.classList.add('open');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden'; // lock scroll
+            });
             heroButtons.appendChild(resumeBtn);
         }
         
@@ -263,7 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
         grid.innerHTML = gridHTML;
     }
 
-    // Render Projects Section
+    // Render Projects Section with interactive tag filters
     function renderProjects(projectsList) {
         const projectsSection = document.getElementById('projects');
         const grid = document.getElementById('projects-grid');
@@ -274,8 +323,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         projectsSection.style.display = 'block';
-        let gridHTML = '';
         
+        // 1. Parse and extract unique tag categories
+        const allTags = new Set();
+        projectsList.forEach(proj => {
+            proj.tools.split(',').forEach(t => {
+                const tag = t.trim();
+                if (tag !== '') allTags.add(tag);
+            });
+        });
+        
+        // 2. Render dynamic tag filter buttons
+        const filterBar = document.getElementById('project-filters');
+        let filterHTML = '<button class="filter-btn active" data-filter="all">All</button>';
+        allTags.forEach(tag => {
+            filterHTML += `<button class="filter-btn" data-filter="${escapeHTML(tag)}">${escapeHTML(tag)}</button>`;
+        });
+        filterBar.innerHTML = filterHTML;
+        
+        // 3. Render project catalog cards
+        let gridHTML = '';
         projectsList.forEach(proj => {
             // Build tool tags
             const tags = proj.tools.split(',')
@@ -300,7 +367,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             gridHTML += `
-                <div class="project-card reveal-up">
+                <div class="project-card reveal-up" data-tools="${escapeHTML(proj.tools)}">
                     <div class="project-img-box">
                         ${imageHTML}
                     </div>
@@ -317,8 +384,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
         });
-        
         grid.innerHTML = gridHTML;
+        
+        // 4. Attach filter click events
+        const filterBtns = filterBar.querySelectorAll('.filter-btn');
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const filterValue = btn.getAttribute('data-filter').toLowerCase();
+                const projectCards = document.querySelectorAll('.project-card');
+                
+                projectCards.forEach(card => {
+                    const cardTools = card.getAttribute('data-tools').toLowerCase().split(',').map(t => t.trim());
+                    if (filterValue === 'all' || cardTools.includes(filterValue)) {
+                        card.style.display = 'flex';
+                        card.style.opacity = '0';
+                        card.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            card.style.opacity = '1';
+                            card.style.transform = 'scale(1)';
+                            card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                        }, 50);
+                    } else {
+                        card.style.opacity = '0';
+                        card.style.transform = 'scale(0.95)';
+                        card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                        setTimeout(() => {
+                            card.style.display = 'none';
+                        }, 300);
+                    }
+                });
+            });
+        });
     }
 
     // Render Dynamic Custom Sections
@@ -438,6 +537,78 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- Stats Counter Trigger & Logic ---
+    function animateCounters() {
+        const counters = document.querySelectorAll('.stat-counter-number');
+        const speed = 120; // Animation frame steps
+        
+        counters.forEach(counter => {
+            const updateCount = () => {
+                const target = parseFloat(counter.getAttribute('data-target'));
+                const count = parseFloat(counter.innerText);
+                const isDecimal = target % 1 !== 0;
+                
+                const increment = target / speed;
+                
+                if (count < target) {
+                    const nextVal = count + increment;
+                    if (isDecimal) {
+                        counter.innerText = nextVal.toFixed(1);
+                    } else {
+                        counter.innerText = Math.ceil(nextVal);
+                    }
+                    setTimeout(updateCount, 15);
+                } else {
+                    if (isDecimal) {
+                        counter.innerText = target.toFixed(1);
+                    } else {
+                        counter.innerText = target;
+                    }
+                }
+            };
+            updateCount();
+        });
+    }
+
+    function initializeStatsObserver() {
+        const statsSection = document.getElementById('stats');
+        if (!statsSection) return;
+        
+        const observer = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounters();
+                    obs.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.2
+        });
+        observer.observe(statsSection);
+    }
+
+    // --- Resume Modal Close handlers ---
+    const resumeModal = document.getElementById('resume-modal');
+    const closeResumeModal = document.getElementById('closeResumeModal');
+    
+    if (closeResumeModal && resumeModal) {
+        closeResumeModal.addEventListener('click', () => {
+            resumeModal.classList.remove('open');
+            resumeModal.setAttribute('aria-hidden', 'true');
+            document.getElementById('resume-iframe').src = '';
+            document.body.style.overflow = '';
+        });
+        
+        resumeModal.addEventListener('click', (e) => {
+            if (e.target === resumeModal) {
+                resumeModal.classList.remove('open');
+                resumeModal.setAttribute('aria-hidden', 'true');
+                document.getElementById('resume-iframe').src = '';
+                document.body.style.overflow = '';
+            }
+        });
+    }
+
     // --- Contact Form Submission handler ---
     const contactForm = document.getElementById('contactForm');
     const formAlert = document.getElementById('form-alert');
@@ -450,9 +621,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const email = document.getElementById('form-email').value.trim();
         const subject = document.getElementById('form-subject').value.trim();
         const message = document.getElementById('form-message').value.trim();
+        const captcha = document.getElementById('form-captcha').value.trim();
         
-        if (!name || !email || !subject || !message) {
-            showAlert('All fields are required.', 'error');
+        if (!name || !email || !subject || !message || !captcha) {
+            showAlert('All fields, including captcha, are required.', 'error');
             return;
         }
         
@@ -466,7 +638,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ name, email, subject, message })
+                body: JSON.stringify({ name, email, subject, message, captcha })
             });
             
             const result = await response.json();
@@ -483,6 +655,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } finally {
             submitBtn.disabled = false;
             submitBtn.innerHTML = `Send Message <i class="fas fa-paper-plane"></i>`;
+            // Refresh captcha for the next submit/retry
+            refreshCaptcha();
+            document.getElementById('form-captcha').value = '';
         }
     });
     

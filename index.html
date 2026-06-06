@@ -107,6 +107,34 @@
             </div>
         </section>
 
+        <!-- Statistics Section -->
+        <section id="stats" class="section stats-section">
+            <div class="container">
+                <div class="stats-grid-container" id="stats-grid">
+                    <div class="stat-counter-card reveal-up">
+                        <div class="stat-counter-icon"><i class="fas fa-tasks"></i></div>
+                        <h3 class="stat-counter-number" data-target="0" id="stat-completed-projects">0</h3>
+                        <p>Projects Done</p>
+                    </div>
+                    <div class="stat-counter-card reveal-up">
+                        <div class="stat-counter-icon"><i class="fas fa-award"></i></div>
+                        <h3 class="stat-counter-number" data-target="0.0" id="stat-gpa">0</h3>
+                        <p>Academic GPA</p>
+                    </div>
+                    <div class="stat-counter-card reveal-up">
+                        <div class="stat-counter-icon"><i class="fas fa-code"></i></div>
+                        <h3 class="stat-counter-number" data-target="0" id="stat-languages">0</h3>
+                        <p>Tools & Tech</p>
+                    </div>
+                    <div class="stat-counter-card reveal-up">
+                        <div class="stat-counter-icon"><i class="fas fa-mug-hot"></i></div>
+                        <h3 class="stat-counter-number" data-target="150" id="stat-coffee">0</h3>
+                        <p>Cups of Coffee</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Skills Section (Hidden by default, shown if skills exist) -->
         <section id="skills" class="section skills-section" style="display: none;">
             <div class="container">
@@ -128,6 +156,9 @@
                     <h2>My Projects</h2>
                     <div class="title-underline"></div>
                 </div>
+                
+                <!-- Filter Bar -->
+                <div class="filter-bar reveal-up" id="project-filters"></div>
                 
                 <div class="projects-grid" id="projects-grid">
                     <!-- Dynamic project cards go here -->
@@ -180,6 +211,10 @@
                                 <label for="form-message">Message</label>
                                 <textarea id="form-message" rows="5" required placeholder="Your Message"></textarea>
                             </div>
+                            <div class="form-group captcha-group">
+                                <label for="form-captcha">Security Verification: <span id="captcha-question-label" class="gradient-text">...</span></label>
+                                <input type="number" id="form-captcha" required placeholder="Answer the simple math question">
+                            </div>
                             <button type="submit" class="btn btn-primary form-submit-btn">
                                 Send Message <i class="fas fa-paper-plane"></i>
                             </button>
@@ -199,6 +234,22 @@
             </div>
         </div>
     </footer>
+
+    <!-- Glassmorphic PDF Resume Modal -->
+    <div id="resume-modal" class="modal" aria-hidden="true">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-pdf"></i> Curriculum Vitae / Resume</h3>
+                <button class="close-modal-btn" id="closeResumeModal" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <iframe id="resume-iframe" src="" frameborder="0"></iframe>
+            </div>
+            <div class="modal-footer">
+                <a href="" id="downloadResumeBtn" class="btn btn-primary" download>Download PDF <i class="fas fa-download"></i></a>
+            </div>
+        </div>
+    </div>
 
     <!-- Custom Logic Script -->
     <script src="app.js"></script>
