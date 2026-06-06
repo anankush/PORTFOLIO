@@ -937,6 +937,18 @@ img {
     color: var(--text-secondary);
 }
 
+.admin-login-link {
+    margin-left: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: var(--transition-smooth);
+}
+
+.admin-login-link:hover {
+    color: var(--primary-color);
+}
+
 .footer-links {
     display: flex;
     gap: 1.2rem;
