@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio | Student & Web Developer</title>
+    <meta name="description" content="My professional portfolio and academic showcase.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="blob-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="#" class="nav-logo" id="logo-name">Portfolio</a>
+            
+            <nav class="nav-menu" id="navMenu">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#about" class="nav-link">About</a>
+                <!-- Dynamic Nav Links will be inserted here -->
+            </nav>
+            
+            <div class="nav-actions">
+                <button id="themeToggle" class="theme-btn" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="section hero-section">
+            <div class="container hero-container">
+                <div class="hero-content reveal-left">
+                    <span class="badge">Welcome to my Portfolio</span>
+                    <h1>Hi, I'm <span class="gradient-text" id="hero-name">Your Name</span></h1>
+                    <p class="hero-subtitle" id="hero-title">Web Developer & Student</p>
+                    <p class="hero-desc" id="hero-bio-short">Loading bio info...</p>
+                    
+                    <div class="hero-btns" id="hero-buttons">
+                        <a href="#contact" class="btn btn-primary">Get in Touch</a>
+                        <!-- Resume button will be appended here if available -->
+                    </div>
+                    
+                    <div class="social-links" id="hero-socials">
+                        <!-- Social links appended here -->
+                    </div>
+                </div>
+                
+                <div class="hero-image-container reveal-right">
+                    <div class="hero-img-box" id="hero-img-container">
+                        <!-- Profile image or avatar fallback -->
+                        <div class="hero-img-fallback">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About & Education Section -->
+        <section id="about" class="section about-section">
+            <div class="container">
+                <div class="section-title reveal-up">
+                    <h2>About Me</h2>
+                    <div class="title-underline"></div>
+                </div>
+                
+                <div class="about-grid">
+                    <div class="about-info reveal-left">
+                        <h3>My Story</h3>
+                        <p id="about-bio-full">Loading my story details...</p>
+                        
+                        <ul class="personal-details" id="about-details">
+                            <!-- Email, phone, location details go here -->
+                        </ul>
+                    </div>
+                    
+                    <div class="about-education reveal-right">
+                        <h3>Education</h3>
+                        <div class="timeline" id="education-timeline">
+                            <!-- Education timeline items go here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section (Hidden by default, shown if skills exist) -->
+        <section id="skills" class="section skills-section" style="display: none;">
+            <div class="container">
+                <div class="section-title reveal-up">
+                    <h2>My Skills</h2>
+                    <div class="title-underline"></div>
+                </div>
+                
+                <div class="skills-grid" id="skills-grid">
+                    <!-- Dynamic skill cards go here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section (Hidden by default, shown if projects exist) -->
+        <section id="projects" class="section projects-section" style="display: none;">
+            <div class="container">
+                <div class="section-title reveal-up">
+                    <h2>My Projects</h2>
+                    <div class="title-underline"></div>
+                </div>
+                
+                <div class="projects-grid" id="projects-grid">
+                    <!-- Dynamic project cards go here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Custom Sections Wrapper (Where dynamic sections will be loaded) -->
+        <div id="custom-sections-wrapper"></div>
+
+        <!-- Contact Section -->
+        <section id="contact" class="section contact-section">
+            <div class="container">
+                <div class="section-title reveal-up">
+                    <h2>Contact Me</h2>
+                    <div class="title-underline"></div>
+                </div>
+                
+                <div class="contact-grid">
+                    <div class="contact-details reveal-left">
+                        <h3>Let's Connect</h3>
+                        <p>Feel free to reach out to me for collaborations, project inquiries, or just to say hello!</p>
+                        
+                        <div class="contact-info-list" id="contact-info-list">
+                            <!-- Email, phone, location cards go here -->
+                        </div>
+                    </div>
+                    
+                    <div class="contact-form-box reveal-right">
+                        <h3>Send a Message</h3>
+                        
+                        <div id="form-alert"></div>
+                        
+                        <form id="contactForm" class="contact-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="form-name">Name</label>
+                                    <input type="text" id="form-name" required placeholder="Your Name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="form-email">Email</label>
+                                    <input type="email" id="form-email" required placeholder="Your Email">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="form-subject">Subject</label>
+                                <input type="text" id="form-subject" required placeholder="Subject">
+                            </div>
+                            <div class="form-group">
+                                <label for="form-message">Message</label>
+                                <textarea id="form-message" rows="5" required placeholder="Your Message"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary form-submit-btn">
+                                Send Message <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-container">
+            <p>&copy; <span id="footer-year">2026</span> <span id="footer-name">Your Name</span>. All Rights Reserved.</p>
+            <div class="footer-links" id="footer-socials">
+                <!-- Footer socials -->
+            </div>
+        </div>
+    </footer>
+
+    <!-- Custom Logic Script -->
+    <script src="app.js"></script>
+</body>
+</html>

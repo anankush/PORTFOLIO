@@ -1,0 +1,41 @@
+name: Deploy Portfolio to InfinityFree
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout repository code
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. Inject live database secrets into db.php
+      - name: Inject Database Credentials
+        run: |
+          sed -i 's/DB_HOST_PLACEHOLDER/${{ secrets.DB_HOST }}/g' db.php
+          sed -i 's/DB_USER_PLACEHOLDER/${{ secrets.DB_USER }}/g' db.php
+          sed -i 's/DB_PASS_PLACEHOLDER/${{ secrets.DB_PASS }}/g' db.php
+          sed -i 's/DB_NAME_PLACEHOLDER/${{ secrets.DB_NAME }}/g' db.php
+
+      # 3. Deploy to InfinityFree via FTP
+      - name: FTP Deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./
+          # InfinityFree default web root folder is usually htdocs
+          server-dir: htdocs/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            .github/**
+            database.sql
