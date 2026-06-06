@@ -9,14 +9,6 @@ $db_user = 'DB_USER_PLACEHOLDER';
 $db_pass = 'DB_PASS_PLACEHOLDER';
 $db_name = 'DB_NAME_PLACEHOLDER';
 
-// Fallback for local testing if placeholders are not replaced
-if ($db_host === 'DB_HOST_PLACEHOLDER') {
-    $db_host = 'localhost';
-    $db_user = 'root';
-    $db_pass = '';
-    $db_name = 'portfolio_db';
-}
-
 try {
     $pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8mb4", $db_user, $db_pass, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
