@@ -27,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             if ($user && password_verify($password, $user['password'])) {
                 $_SESSION['admin_logged_in'] = true;
                 $_SESSION['admin_username'] = $user['username'];
+                $_SESSION['last_activity'] = time();
                 
                 header("Location: dashboard.php");
                 exit();
@@ -246,6 +247,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
         <h2>Admin Panel</h2>
         <p>Login to manage your portfolio</p>
         
+        <?php if (isset($_GET['timeout']) && $_GET['timeout'] == 1): ?>
+            <div class="error-alert" style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3); color: #fbbf24;">
+                <i class="fas fa-history"></i>
+                <span>Session expired due to inactivity.</span>
+            </div>
+        <?php endif; ?>
+
         <?php if ($error_msg !== ''): ?>
             <div class="error-alert">
                 <i class="fas fa-exclamation-circle"></i>

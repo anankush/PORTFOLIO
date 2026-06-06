@@ -14,7 +14,20 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | Portfolio</title>
+    <?php
+    $page_tab_titles = [
+        'dashboard.php' => 'Overview',
+        'manage_profile.php' => 'Profile Settings',
+        'manage_education.php' => 'Manage Education',
+        'manage_skills.php' => 'Manage Skills',
+        'manage_projects.php' => 'Manage Projects',
+        'manage_sections.php' => 'Custom Sections',
+        'manage_messages.php' => 'Inbox Messages',
+        'change_password.php' => 'Change Password'
+    ];
+    $page_subtitle = $page_tab_titles[$current_page] ?? 'Control Panel';
+    ?>
+    <title><?= $page_subtitle ?> | Admin Dashboard</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
