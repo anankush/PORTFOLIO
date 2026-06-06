@@ -14,7 +14,7 @@ if ($db_host === 'DB_HOST_PLACEHOLDER') {
     $db_host = 'localhost';
     $db_user = 'root';
     $db_pass = '';
-    $db_name = 'if0_41843901_portfolio';
+    $db_name = 'portfolio_db';
 }
 
 try {
