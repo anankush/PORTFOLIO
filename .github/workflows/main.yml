@@ -32,8 +32,8 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./
-          # InfinityFree default web root folder is usually htdocs
-          server-dir: htdocs/
+          # InfinityFree remote subdirectory for custom domain
+          server-dir: htdocs/nayanportfolio.my-style.in/
           exclude: |
             **/.git*
             **/.git*/**
