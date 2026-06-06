@@ -422,6 +422,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <i class="fas fa-envelope"></i> <span>Messages</span>
                 </a>
             </li>
+            <li>
+                <a href="change_password.php" class="menu-link <?= $current_page === 'change_password.php' ? 'active' : '' ?>">
+                    <i class="fas fa-key"></i> <span>Change Password</span>
+                </a>
+            </li>
             <li style="margin-top: auto;">
                 <a href="logout.php" class="menu-link menu-link-logout">
                     <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
@@ -445,6 +450,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         case 'manage_projects.php': echo 'Manage Project Catalog'; break;
                         case 'manage_sections.php': echo 'Manage Custom Dynamic Sections'; break;
                         case 'manage_messages.php': echo 'Contact Messages Inbox'; break;
+                        case 'change_password.php': echo 'Change Admin Password'; break;
                         default: echo 'Admin Panel';
                     }
                     ?>
