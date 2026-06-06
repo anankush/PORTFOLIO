@@ -9,6 +9,8 @@ $db_user = 'DB_USER_PLACEHOLDER';
 $db_pass = 'DB_PASS_PLACEHOLDER';
 $db_name = 'DB_NAME_PLACEHOLDER';
 
+
+
 try {
     $pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8mb4", $db_user, $db_pass, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
