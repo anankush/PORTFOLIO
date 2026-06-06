@@ -33,7 +33,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./
           # InfinityFree remote subdirectory for custom domain
-          server-dir: htdocs/nayanportfolio.my-style.in/
+          server-dir: nayanportfolio.my-style.in/htdocs/
           exclude: |
             **/.git*
             **/.git*/**
